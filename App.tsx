@@ -23,8 +23,6 @@ function App(): JSX.Element {
 
   const [status, setStatus] = useState("");
 
-  const [pending, setPending] = useState(false);
-
   const [sending, setSending] = useState(false);
 
   const [btn, setBtn] = useState("Send")
@@ -50,15 +48,15 @@ function App(): JSX.Element {
       const tx = await wallet.sendTransaction(transaction);
       setStatus(`Transaction sent: ${tx.hash}`);
       setBtn("confirming Pending...")
-      setPending(true);
       await tx.wait();
-      setPending(false);
       setStatus(`Transaction confirmed: ${tx.hash}`);
       setBtn("Send")
       setSending(false);
-    } catch (err) {
+    } catch (err:any) {
       console.log(err);
-      setStatus(`Transaction failed`);
+      setStatus(`Transaction failed: ${err.message}}`);
+      setBtn("Send")
+      setSending(false);
     }
   };
 
@@ -70,10 +68,7 @@ function App(): JSX.Element {
         style={{padding:16}}
         contentInsetAdjustmentBehavior="automatic">
         <View style={styles.app}>
-          <View style={styles.header}>
-            <Text style={styles.title}>React Native for Web</Text>
-            {pending && <Text>Pending...</Text>}
-          </View>
+          <View style={styles.title}><Text style={styles.title}>Ethers</Text></View>
           <TextInput
             style={styles.input}
             onChangeText={onChangeValue}
@@ -82,7 +77,7 @@ function App(): JSX.Element {
             placeholder="Value"
           />
           <TextInput
-            style={styles.input}
+            style={styles.inpt}
             onChangeText={onChangeAddress}
             value={address}
             placeholder="Address"
@@ -96,7 +91,8 @@ function App(): JSX.Element {
             }}
             disabled={sending}
           />
-          <Text>{status}</Text>
+          <View style={styles.status}></View>
+          <Text >{status}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -120,17 +116,33 @@ const styles = StyleSheet.create({
     borderColor: "thistle",
     borderRadius: 10,
     padding:8,
+    paddingHorizontal: 16,
     margin:4,
+    fontSize:24,
     marginVertical: 16,
+  },
+  inpt:{
+    borderWidth: 1,
+    borderColor: "thistle",
+    borderRadius: 10,
+    marginVertical: 16,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    fontSize:24,
+  },
+  textInput:{
+    fontSize: 32,
   },
   title: {
     fontWeight: "bold",
     margin: 16,
+    fontSize:48,
     textAlign: "center"
   },
   text: {
     lineHeight: "1.5em",
     margin: 16,
+    marginHorizontal:32,
     textAlign: "center"
   },
   link: {
@@ -138,8 +150,7 @@ const styles = StyleSheet.create({
   },
   status:{
     margin:32,
-    maxWidth:'60vw',
-    fontSize: "1rem",
+    fontSize: 32,
   },
   code: {
     fontFamily: "monospace, monospace"
@@ -159,7 +170,7 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
-  },
+  }
 });
 
 
